@@ -1,0 +1,128 @@
+
+"threeightwo"
+ 01234567890
+
+--- 
+char_i = 0
+char = 't'
+# Add to possible_spelled_digits the spelled digits whose first char matches the
+# current char at char_i
+possible_spelled_digits = [ "two", "three" ]
+possible_spelled_digits_indices = [ 0, 0 ]
+# Noop filter
+possible_spelled_digit_offset = 0 
+possible_spelled_digit_offset = 0 
+---
+char_i = 1 
+char = 'h'
+possible_spelled_digits = [ "two", "three" ]
+possible_spelled_digits_offsets = [ 1, 1 ]
+# Filter out possible spelled digits whose char at possible_spelled_digit_i does
+# not match current char at char_i
+possible_spelled_digit_offset = 1
+possible_spelled_digit_offset = 1
+possible_spelled_digits = [ "three" ]
+possible_spelled_digits_offsets = [ 1 ]
+---
+char_i = 2 
+char = 'r'
+possible_spelled_digits = [ "three" ]
+possible_spelled_digits_offsets = [ 2 ]
+# Noop filter
+possible_spelled_digit_offset = 2 
+---
+char_i = 3 
+char = 'e'
+# Add to possible_spelled_digits the spelled digits whose first char matches the
+# current char at char_i
+possible_spelled_digits = [ "three", "eight" ]
+possible_spelled_digits_offsets = [ 3, 0 ]
+# Noop filter
+possible_spelled_digit_offset = 3 
+possible_spelled_digit_offset = 0 
+---
+char_i = 4
+char = 'e'
+# Add to possible_spelled_digits the spelled digits whose first char matches the
+# current char at char_i
+possible_spelled_digits = [ "three", "eight", "eight" ]
+possible_spelled_digits_offsets = [ 4, 1, 0 ]
+# Filter
+possible_spelled_digit_offset = 4
+possible_spelled_digit_offset = 1
+possible_spelled_digit_offset = 1
+possible_spelled_digits = [ "three", "eight" ]
+possible_spelled_digits_offsets = [ 4, 0 ]
+# Check if any offets are equal to the length of their associated strs and if
+# they are, add them to digits as a number and remove them from
+# possible_spelled_digits and possible_spelled_digits_offset
+digits = [ 3 ]
+possible_spelled_digits = [ "eight" ]
+possible_spelled_digits_offsets = [ 0 ]
+--- 
+char_i = 5
+char = 'i'
+possible_spelled_digits = [ "eight" ]
+possible_spelled_digits_offsets = [ 1 ]
+# Noop Filter
+possible_spelled_digit_offset = 1 
+# Noop Digit Check
+digits = [ 3 ]
+---
+char_i = 6
+char = 'g'
+possible_spelled_digits = [ "eight" ]
+possible_spelled_digits_offsets = [ 2 ]
+# Noop Filter
+possible_spelled_digit_offset = 2 
+# Noop Digit Check
+digits = [ 3 ]
+---
+char_i = 7 
+char = 'h'
+possible_spelled_digits = [ "eight" ]
+possible_spelled_digits_offsets = [ 3 ]
+# Noop Filter
+possible_spelled_digit_offset = 3 
+# Noop Digit Check
+digits = [ 3 ]
+---
+char_i = 8 
+char = 't'
+# Digit Add
+possible_spelled_digits = [ "eight", "two", "three" ]
+possible_spelled_digits_offsets = [ 4, 0, 0 ]
+# Noop Filter
+possible_spelled_digit_offset = 4
+possible_spelled_digit_offset = 0 
+possible_spelled_digit_offset = 0 
+# Digit Check
+digits = [ 3, 8 ]
+possible_spelled_digits = [ "two", "three" ]
+possible_spelled_digits_offsets = [ 0, 0 ]
+---
+char_i = 9 
+char = 'w'
+# Digit Add
+possible_spelled_digits = [ "two", "three" ]
+possible_spelled_digits_offsets = [ 1, 1 ]
+# Filter
+possible_spelled_digit_offset = 1
+possible_spelled_digit_offset = 1
+possible_spelled_digits = [ "two" ]
+possible_spelled_digits_offsets = [ 1 ]
+# Noop Digit Check
+digits = [ 3, 8 ]
+---
+char_i = 10
+char = 'o'
+# Digit Add
+possible_spelled_digits = [ "two", "one" ]
+possible_spelled_digits_offsets = [ 2, 0 ]
+# Noop Filter
+possible_spelled_digit_offset = 2 
+possible_spelled_digit_offset = 0 
+# Digit Check
+digits = [ 3, 8, 2 ]
+possible_spelled_digits = [ "one" ]
+possible_spelled_digits_offsets = [ 0 ]
