@@ -162,15 +162,24 @@ fn calibration_sum_2(input: &str) -> u32 {
             possible_spelled_digits = possible_spelled_digits
                 .iter()
                 .enumerate()
-                .filter(|(i, _)| !removed_spelled_digits_indices.contains(i))
-                .map(|(_, &spelled_digit)| spelled_digit)
+                // .filter(|(i, _)| !removed_spelled_digits_indices.contains(i))
+                // .map(|(_, &spelled_digit)| spelled_digit)
+                .filter_map(|(i, &spelled_digit)| {
+                    // if removed_spelled_digits_indices.contains(&i) {
+                    //     None
+                    // } else {
+                    //     Some(spelled_digit)
+                    // }
+                    (!removed_spelled_digits_indices.contains(&i)).then_some(spelled_digit)
+                })
                 .collect();
 
             possible_spelled_digits_offsets = possible_spelled_digits_offsets
                 .iter()
                 .enumerate()
-                .filter(|(i, _)| !removed_spelled_digits_indices.contains(i))
-                .map(|(_, &offset)| offset)
+                .filter_map(|(i, &spelled_digit)| {
+                    (!removed_spelled_digits_indices.contains(&i)).then_some(spelled_digit)
+                })
                 .collect();
 
             println!("--- AFTER DIGIT CHECK ---");
