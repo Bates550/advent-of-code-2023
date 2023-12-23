@@ -30,14 +30,14 @@ struct Schematic {
 impl Schematic {
     pub fn new(input: &str) -> Schematic {
         let layout = String::from(input);
-        let width = layout.find('\n').unwrap() - 1;
+        let width = layout.find('\n').unwrap();
         // println!("width: {:?}", width);
         // println!("layout: {:?}", layout);
 
         let single_line_layout: String = layout.split('\n').collect();
         // println!("single_line_layout: {:?}", single_line_layout);
 
-        let height = single_line_layout.len() / width - 1;
+        let height = single_line_layout.len() / width;
         // println!("height: {:?}", height);
 
         let s = Schematic {
@@ -55,7 +55,7 @@ impl Schematic {
         // o-> +x
         // |
         // v +y
-        // 0-based coords. So (0, 0) is first char.
+        // 1-based coords. So (1, 1) is first char.
 
         if x > self.width {
             panic!(
@@ -70,7 +70,7 @@ impl Schematic {
             );
         }
 
-        let n = (y * self.width) + x + 1;
+        let n = (y * self.width) + x;
         let result = self.layout.chars().nth(n.try_into().unwrap()).unwrap();
 
         result
@@ -100,8 +100,8 @@ impl Schematic {
                     // it to potential_part_numbers.
 
                     println!("i: {:?}", i);
-                    let x = i % usize::from(self.width + 1) - partial_part_number.len();
-                    let y = i / usize::from(self.width + 1);
+                    let x = i % usize::from(self.width) - partial_part_number.len() + 1;
+                    let y = i / usize::from(self.width) + 1;
                     potential_part_numbers.push(PotentialPartNumber {
                         x: x.try_into().unwrap(),
                         y: y.try_into().unwrap(),
