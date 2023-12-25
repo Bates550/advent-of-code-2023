@@ -45,7 +45,7 @@ impl Schematic {
             width: width.try_into().unwrap(),
             height: height.try_into().unwrap(),
         };
-        println!("schematic: {:?}", s);
+        // println!("schematic: {:?}", s);
 
         s
     }
@@ -70,7 +70,7 @@ impl Schematic {
             );
         }
 
-        let n = (y * self.width) + x;
+        let n = ((y - 1) * self.width) + (x - 1);
         let result = self.layout.chars().nth(n.try_into().unwrap()).unwrap();
 
         result
@@ -100,7 +100,10 @@ impl Schematic {
                     // it to potential_part_numbers.
 
                     println!("i: {:?}", i);
-                    let x = i % usize::from(self.width) - partial_part_number.len() + 1;
+                    println!("width: {:?}", self.width);
+                    println!("len: {:?}", partial_part_number.len());
+                    println!("num: {:?}", partial_part_number);
+                    let x = i % usize::from(self.width + 1) - partial_part_number.len() + 2;
                     let y = i / usize::from(self.width) + 1;
                     potential_part_numbers.push(PotentialPartNumber {
                         x: x.try_into().unwrap(),
@@ -113,15 +116,147 @@ impl Schematic {
                     partial_part_number.clear();
                 }
             }
-            println!("partial_part_number: {:?}", partial_part_number);
-            println!("potential_part_numbers: {:?}", potential_part_numbers);
+            // println!("partial_part_number: {:?}", partial_part_number);
+            // println!("potential_part_numbers: {:?}", potential_part_numbers);
         }
 
         /***
          * Determine which of the potential part numbers are actual part numbers
          */
 
-        Vec::new()
+        let mut part_numbers: Vec<u16> = Vec::new();
+        for potential_part_number in potential_part_numbers {
+            let start_x = potential_part_number.x;
+            let start_y = potential_part_number.y;
+            let end_x = potential_part_number.x + potential_part_number.len - 1;
+            let end_y = potential_part_number.y;
+            let very_left = start_x == 1;
+            let very_right = end_x == self.width;
+            let very_top = start_y == 1;
+            let very_bottom = end_y == self.height;
+            println!(
+                "num: {:?}, start: ({:?}, {:?}), end: ({:?}, {:?})",
+                potential_part_number.num, start_x, start_y, end_x, end_y
+            );
+
+            let mut found = false;
+
+            // If we're not on the very top row, check the top
+            if !very_top && !found {
+                println!("checking top");
+                for x in start_x..end_x + 1 {
+                    let y = potential_part_number.y - 1;
+                    let char = self.at(x, y);
+                    println!("char {:?} at ({:?}, {:?})", char, x, y);
+                    if char != '.' {
+                        part_numbers.push(potential_part_number.num);
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            // If we're not on the very bottom row, check the bottom
+            if !very_bottom && !found {
+                println!("checking bottom");
+                for x in start_x..end_x + 1 {
+                    let y = potential_part_number.y + 1;
+                    let char = self.at(x, y);
+                    println!("char {:?} at ({:?}, {:?})", char, x, y);
+                    if char != '.' {
+                        part_numbers.push(potential_part_number.num);
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            // If we're not on the very right column, check the right
+            if !very_right && !found {
+                println!("checking right");
+                let x = end_x + 1;
+                let y = potential_part_number.y;
+                let char = self.at(x, y);
+                println!("char {:?} at ({:?}, {:?})", char, x, y);
+                if char != '.' {
+                    part_numbers.push(potential_part_number.num);
+                    found = true;
+                }
+            }
+
+            // If we're not on the very left column, check the left
+            if !very_left && !found {
+                println!("checking left");
+                let x = start_x - 1;
+                let y = potential_part_number.y;
+                let char = self.at(x, y);
+                println!("char {:?} at ({:?}, {:?})", char, x, y);
+                if char != '.' {
+                    part_numbers.push(potential_part_number.num);
+                    found = true;
+                }
+            }
+
+            // If we're not on the very left and not on the very top, check the
+            // top left corner
+            if !very_left && !very_top && !found {
+                println!("checking top left");
+                let x = start_x - 1;
+                let y = start_y - 1;
+                let char = self.at(x, y);
+                println!("char {:?} at ({:?}, {:?})", char, x, y);
+                if char != '.' {
+                    part_numbers.push(potential_part_number.num);
+                    found = true;
+                }
+            }
+
+            // If we're not on the very right and not on the very top, check the
+            // top right corner
+            if !very_right && !very_top && !found {
+                println!("checking top right");
+                let x = end_x + 1;
+                let y = end_y - 1;
+                let char = self.at(x, y);
+                println!("char {:?} at ({:?}, {:?})", char, x, y);
+                if char != '.' {
+                    part_numbers.push(potential_part_number.num);
+                    found = true;
+                }
+            }
+
+            // If we're not on the very left and not on the very bottom, check the
+            // bottom left corner
+            if !very_left && !very_bottom && !found {
+                println!("checking bottom left");
+                let x = start_x - 1;
+                let y = start_y + 1;
+                let char = self.at(x, y);
+                println!("char {:?} at ({:?}, {:?})", char, x, y);
+                if char != '.' {
+                    part_numbers.push(potential_part_number.num);
+                    found = true;
+                }
+            }
+
+            // If we're not on the very right and not on the very bottom, check the
+            // bottom right corner
+            if !very_right && !very_bottom && !found {
+                println!("checking bottom right");
+                let x = end_x + 1;
+                let y = start_y + 1;
+                let char = self.at(x, y);
+                println!("char {:?} at ({:?}, {:?})", char, x, y);
+                if char != '.' {
+                    part_numbers.push(potential_part_number.num);
+                    found = true;
+                }
+            }
+
+            println!("part_numbers: {:?}", part_numbers);
+        }
+
+        part_numbers
     }
 }
 
@@ -135,10 +270,10 @@ fn problem_1(input: &str) -> u32 {
     // println!("{:?}", schematic.at(3, 1));
 
     let part_numbers = schematic.part_numbers();
-    // println!("part_numbers: {:?}", part_numbers);
 
-    // for line in input.lines() {}
-    42
+    let sum: u16 = part_numbers.iter().sum();
+
+    u32::from(sum)
 }
 
 #[cfg(test)]
@@ -166,16 +301,46 @@ mod tests {
 467..114..
 ...*......
 ..35..633.";
-        //         let input = "\
-        // 0123456789
-        // 2468024680";
 
         input
     }
 
     #[test]
+    fn schematic_at() {
+        let input = "\
+123
+456
+789";
+
+        let schematic = Schematic::new(input);
+
+        // 0-based
+        // assert_eq!('1', schematic.at(0, 0));
+        // assert_eq!('2', schematic.at(1, 0));
+        // assert_eq!('3', schematic.at(2, 0));
+        // assert_eq!('4', schematic.at(0, 1));
+        // assert_eq!('5', schematic.at(1, 1));
+        // assert_eq!('6', schematic.at(2, 1));
+        // assert_eq!('7', schematic.at(0, 2));
+        // assert_eq!('8', schematic.at(1, 2));
+        // assert_eq!('9', schematic.at(2, 2));
+
+        // 1-based
+        assert_eq!('1', schematic.at(1, 1));
+        assert_eq!('2', schematic.at(2, 1));
+        assert_eq!('3', schematic.at(3, 1));
+        assert_eq!('4', schematic.at(1, 2));
+        assert_eq!('5', schematic.at(2, 2));
+        assert_eq!('6', schematic.at(3, 2));
+        assert_eq!('7', schematic.at(1, 3));
+        assert_eq!('8', schematic.at(2, 3));
+        assert_eq!('9', schematic.at(3, 3));
+    }
+
+    #[test]
     fn day3_part1() {
-        assert_eq!(8, problem_1(&small_input()));
+        assert_eq!(502, problem_1(&small_input()));
+        assert_eq!(4361, problem_1(&input()));
     }
 
     // #[test]
