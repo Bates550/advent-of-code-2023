@@ -12,6 +12,18 @@ pub fn run() {
     // println!("problem_2: {}", result);
 }
 
+fn is_symbol(c: char) -> bool {
+    let mut is_number = false;
+    if let Some(_) = c.to_digit(10) {
+        is_number = true;
+    }
+
+    if c != '.' && !is_number {
+        return true;
+    }
+
+    false
+}
 #[derive(Debug)]
 struct PotentialPartNumber {
     x: u16,
@@ -85,6 +97,7 @@ impl Schematic {
         // step, which ones are actually part numbers based on their adjacency
         // to symbols.
 
+        println!("\n---\nChecking for potential part numbers\n---\n");
         let mut potential_part_numbers: Vec<PotentialPartNumber> = Vec::new();
         let mut partial_part_number = String::new();
         for (i, char) in self.layout.chars().enumerate() {
@@ -103,8 +116,11 @@ impl Schematic {
                     println!("width: {:?}", self.width);
                     println!("len: {:?}", partial_part_number.len());
                     println!("num: {:?}", partial_part_number);
-                    let x = i % usize::from(self.width + 1) - partial_part_number.len() + 2;
-                    let y = i / usize::from(self.width) + 1;
+                    let x =
+                        ((i - 1) % usize::from(self.width) + 1) - (partial_part_number.len() - 1);
+                    let y = (i - 1) / usize::from(self.width) + 1;
+
+                    println!("(x, y): ({:?}, {:?})", x, y);
                     potential_part_numbers.push(PotentialPartNumber {
                         x: x.try_into().unwrap(),
                         y: y.try_into().unwrap(),
@@ -119,11 +135,14 @@ impl Schematic {
             // println!("partial_part_number: {:?}", partial_part_number);
             // println!("potential_part_numbers: {:?}", potential_part_numbers);
         }
+        let ppns: Vec<u16> = potential_part_numbers.iter().map(|ppn| ppn.num).collect();
+        println!("potential_part_numbers: {:?}", ppns);
 
         /***
          * Determine which of the potential part numbers are actual part numbers
          */
 
+        println!("\n---\nDeterming actual parts from potentials\n---\n");
         let mut part_numbers: Vec<u16> = Vec::new();
         for potential_part_number in potential_part_numbers {
             let start_x = potential_part_number.x;
@@ -148,7 +167,7 @@ impl Schematic {
                     let y = potential_part_number.y - 1;
                     let char = self.at(x, y);
                     println!("char {:?} at ({:?}, {:?})", char, x, y);
-                    if char != '.' {
+                    if is_symbol(char) {
                         part_numbers.push(potential_part_number.num);
                         found = true;
                         break;
@@ -163,7 +182,7 @@ impl Schematic {
                     let y = potential_part_number.y + 1;
                     let char = self.at(x, y);
                     println!("char {:?} at ({:?}, {:?})", char, x, y);
-                    if char != '.' {
+                    if is_symbol(char) {
                         part_numbers.push(potential_part_number.num);
                         found = true;
                         break;
@@ -178,7 +197,7 @@ impl Schematic {
                 let y = potential_part_number.y;
                 let char = self.at(x, y);
                 println!("char {:?} at ({:?}, {:?})", char, x, y);
-                if char != '.' {
+                if is_symbol(char) {
                     part_numbers.push(potential_part_number.num);
                     found = true;
                 }
@@ -191,7 +210,7 @@ impl Schematic {
                 let y = potential_part_number.y;
                 let char = self.at(x, y);
                 println!("char {:?} at ({:?}, {:?})", char, x, y);
-                if char != '.' {
+                if is_symbol(char) {
                     part_numbers.push(potential_part_number.num);
                     found = true;
                 }
@@ -205,7 +224,7 @@ impl Schematic {
                 let y = start_y - 1;
                 let char = self.at(x, y);
                 println!("char {:?} at ({:?}, {:?})", char, x, y);
-                if char != '.' {
+                if is_symbol(char) {
                     part_numbers.push(potential_part_number.num);
                     found = true;
                 }
@@ -219,7 +238,7 @@ impl Schematic {
                 let y = end_y - 1;
                 let char = self.at(x, y);
                 println!("char {:?} at ({:?}, {:?})", char, x, y);
-                if char != '.' {
+                if is_symbol(char) {
                     part_numbers.push(potential_part_number.num);
                     found = true;
                 }
@@ -233,7 +252,7 @@ impl Schematic {
                 let y = start_y + 1;
                 let char = self.at(x, y);
                 println!("char {:?} at ({:?}, {:?})", char, x, y);
-                if char != '.' {
+                if is_symbol(char) {
                     part_numbers.push(potential_part_number.num);
                     found = true;
                 }
@@ -247,14 +266,13 @@ impl Schematic {
                 let y = start_y + 1;
                 let char = self.at(x, y);
                 println!("char {:?} at ({:?}, {:?})", char, x, y);
-                if char != '.' {
+                if is_symbol(char) {
                     part_numbers.push(potential_part_number.num);
                     found = true;
                 }
             }
-
-            println!("part_numbers: {:?}", part_numbers);
         }
+        println!("part_numbers: {:?}", part_numbers);
 
         part_numbers
     }
@@ -299,7 +317,7 @@ mod tests {
     fn small_input() -> &'static str {
         let input = "\
 467..114..
-...*......
+...*.....9
 ..35..633.";
 
         input
